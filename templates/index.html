@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Helmet Violation Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #001f4d; /* navy blue */
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .header h2 {
+        font-size: 36px;  /* <-- change this value */
+        margin: 0;        /* optional, remove default margin */
+        }
+        .container {
+            background-color: white;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            text-align: center; /* center all content inside container */
+        }
+        .form-section {
+            background-color: #001f4d; /* navy blue */
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-section label,
+        .form-section small {
+            color: white;
+        }
+
+        .form-section input[type="file"] {
+            width: 80%;
+            margin: 10px auto 20px;
+            display: block;
+            padding: 5px;
+        }
+
+        .form-section button {
+            background-color: #001f4d;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-section button:hover {
+            background-color: #003366;
+        }
+
+        label, p {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        input[type="file"] {
+            width: 80%; /* narrower and centered */
+            margin-bottom: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+        button {
+            background-color: #001f4d; /* navy blue */
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        button:hover {
+            background-color: #001f4d;
+        }
+        img {
+            margin-top: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+        small {
+            font-weight: normal;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Helmet Violation Detection System</h2>
+    </div>
+    <div class="container">
+        <form action="/" method="post" enctype="multipart/form-data">
+            <label for="image">
+                Upload Image <br>
+                <small>(Recommended quality: 1920x1080, formats: .jpg, .jpeg, .png)</small>
+            </label>
+            <input type="file" name="image" id="image" accept=".jpg, .jpeg, .png" required>
+            <button type="submit">Detect</button>
+        </form>
+
+        {% if result %}
+            <h3>Results:</h3>
+            <pre>{{ result }}</pre>
+        {% endif %}
+
+        {% if image_path %}
+            <h3>Annotated Image:</h3>
+            <img src="/{{ image_path }}" alt="Annotated Result">
+        {% endif %}
+    </div>
+</body>
+</html>

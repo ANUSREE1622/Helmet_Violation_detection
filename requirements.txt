@@ -1,0 +1,5 @@
+flask
+ultralytics
+paddleocr
+opencv-python
+
