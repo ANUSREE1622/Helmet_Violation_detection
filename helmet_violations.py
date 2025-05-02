@@ -43,22 +43,32 @@ def number_plate_det(res, plate_box, plate_index=0):
     crop = res.orig_img[y1:y2, x1:x2]
 
     if crop.size == 0 or crop.shape[0] < 10 or crop.shape[1] < 10:
+        print(f"❌ Plate {plate_index + 1} - Crop too small.")
         return ""  # Skip if crop is too small
 
-    ocr_result = ocr.ocr(crop, cls=True)
+    try:
+        ocr_result = ocr.ocr(crop, cls=True)
 
-    if ocr_result and len(ocr_result) > 0 and len(ocr_result[0]) > 0:
-        full_text = ""
-        for line in ocr_result[0]:
-            part = line[1][0].strip().replace(" ", "")
-            full_text += part
-        full_text = full_text.upper()
-        corrected_text = correct_common_ocr_errors(full_text)
-        return corrected_text  # ✅ Only return corrected plate
-    else:
-        print(f"❌ Plate {plate_index + 1} - OCR failed or returned no usable text.")
-        return ""  # OCR failed
+        # Check carefully if OCR returned meaningful results
+        if ocr_result and isinstance(ocr_result, list) and len(ocr_result) > 0 and isinstance(ocr_result[0], list) and len(ocr_result[0]) > 0:
+            full_text = ""
+            for line in ocr_result[0]:
+                if line and len(line) >= 2 and isinstance(line[1], (list, tuple)) and len(line[1]) > 0:
+                    part = line[1][0].strip().replace(" ", "")
+                    full_text += part
+            full_text = full_text.upper()
+            corrected_text = correct_common_ocr_errors(full_text)
+            return corrected_text  # ✅ Only return corrected plate
+        else:
+            print(f"❌ Plate {plate_index + 1} - OCR failed or returned no usable text.")
+            return ""
 
+    except Exception as e:
+        print(f"❌ Plate {plate_index + 1} - Exception during OCR: {e}")
+        return ""
+
+
+import cv2
 
 def detect_helmet_violations(image_path):
     result = trained_model(image_path)[0]
@@ -113,11 +123,11 @@ def detect_helmet_violations(image_path):
 
                 corrected_text = number_plate_det(result, matched_plate, i)
                 if corrected_text:
-                    messages.append(f"✅ Helmetless Rider {i + 1}: Detected number plate - {corrected_text}")
+                    messages.append(f"✅ Helmetless rider or pillion {i + 1}: Detected number plate - {corrected_text}")
                 else:
-                    messages.append(f"❌ Helmetless Rider {i + 1}: OCR failed on the detected number plate")
+                    messages.append(f"❌ Helmetless rider or pillion {i + 1}: OCR failed on the detected number plate")
             else:
-                messages.append(f"❌ Helmetless Rider {i + 1}: No number plate detected inside the rider's bounding box")
+                messages.append(f"❌ Helmetless rider or pillion {i + 1}: No number plate detected")
 
     else:
         messages.append("✅ All riders appear to be wearing helmets.")
